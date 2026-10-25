@@ -112,8 +112,8 @@ export function KittiTable() {
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <RuleSwitch
             id="rule-quads"
-            label="Four of a kind auto-win"
-            description="If any rank appears four times in the nine cards, the round is an auto-win and the cards are not split."
+            label="Four of a kind"
+            description="Four of the same rank in the nine cards wins the deal automatically."
             checked={rules.enable_four_of_a_kind_autowin}
             onCheckedChange={(checked) =>
               setRules((current) => ({ ...current, enable_four_of_a_kind_autowin: checked }))
@@ -309,8 +309,8 @@ function SplitView({
       </p>
       <p className="mt-2 max-w-2xl text-sm leading-6 text-[#f6f1e4]">
         {aggressive
-          ? "Both of the top two hands are a pair or better, so this split maximizes Hand 1 and Hand 2 together."
-          : "No legal split keeps both top hands at pair strength, so this line holds the strongest middle that still ranks Hand 1, then Hand 2, then Hand 3."}
+          ? "Hand 1 and Hand 2 are both locks, a trail or a 2-3-5 trump, so this split takes the two wins in a row."
+          : "Defense is the normal plan. No legal split locks both Hand 1 and Hand 2, so this line protects the middle kitti hand."}
       </p>
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         {result.hands.map((hand, index) => (

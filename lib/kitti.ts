@@ -17,8 +17,10 @@
  *   Pair: higher pair rank, then the kicker.
  *
  * The absolute score packs the category above every kicker, so a pair always
- * beats any high card. A hand is "strong" at Pair or better. The floor is the
- * worst pair, 2-2-3, exported as STRONG_HAND_THRESHOLD.
+ * beats any high card. Defense is the normal plan. Aggressive play happens
+ * only when a legal split has two lock hands in a row: Hand 1 and Hand 2 are
+ * each a trail, or a 2-3-5 trump when that house rule is on. Pure sequence,
+ * sequence, color, pair, and high card are not locks.
  */
 
 export const RANKS = [
@@ -53,7 +55,7 @@ export type HouseRules = {
 }
 
 export const DEFAULT_RULES: HouseRules = {
-  enable_four_of_a_kind_autowin: false,
+  enable_four_of_a_kind_autowin: true,
   enable_2_3_5_trump: false,
 }
 
@@ -195,11 +197,12 @@ function pack(category: Category, within: number): number {
   return CATEGORY_RANK[category] * KICKER_SPACE + within
 }
 
-/**
- * Pair or better. Equal to the score of 2-2-3, the worst pair in Teen Patti
- * (pair of twos, kicker three). Anything below this is a high card.
- */
+/** Score of the worst pair, 2-2-3. A pair is not a lock hand. */
 export const STRONG_HAND_THRESHOLD = pack("pair", RANK_VALUE["2"] * RANK_BASE + RANK_VALUE["3"])
+
+function isLockHand(hand: HandEvaluation): boolean {
+  return hand.category === "trail" || hand.category === "trump-235"
+}
 
 function isFlush(cards: readonly Card[]): boolean {
   return cards.every((card) => card.suit === cards[0].suit)
@@ -466,10 +469,7 @@ export function arrange(cards: readonly Card[], rules: HouseRules): ArrangeResul
     )
   }
 
-  const aggressive = legal.filter(
-    ([h1, h2]) =>
-      h1.score >= STRONG_HAND_THRESHOLD && h2.score >= STRONG_HAND_THRESHOLD,
-  )
+  const aggressive = legal.filter(([h1, h2]) => isLockHand(h1) && isLockHand(h2))
 
   if (aggressive.length > 0) {
     let best = aggressive[0]

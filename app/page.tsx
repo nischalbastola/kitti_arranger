@@ -99,8 +99,8 @@ export default function HomePage() {
           is at least as strong as Hand 2, and Hand 2 is at least as strong as Hand 3.
         </p>
         <p className="mt-3 text-sm leading-6 text-[#d9ccb0]">
-          The arranger plays aggressive when both of the top two hands are a pair or better — the
-          floor is the worst pair, 2-2-3. Otherwise it forces Kitti and protects the middle hand.
+          Defense is the normal plan. It goes for the win only when Hand 1 and Hand 2 are both
+          trails, or a 2-3-5 trump. Otherwise it forces Kitti and protects the middle hand.
         </p>
       </header>
 

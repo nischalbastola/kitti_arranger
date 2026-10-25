@@ -4,6 +4,7 @@ import {
   type HouseRules,
   type Rank,
   type Suit,
+  DEFAULT_RULES,
   KittiError,
   STRONG_HAND_THRESHOLD,
   arrange,
@@ -88,7 +89,7 @@ describe("category ordering", () => {
     expect(aces.score).toBeGreaterThan(kings.score)
   })
 
-  it("treats 2-2-3 as the strong-hand floor", () => {
+  it("scores 2-2-3 as the worst pair, which is not a lock", () => {
     const worstPair = hand("2h 2s 3c")
     expect(worstPair.category).toBe("pair")
     expect(worstPair.score).toBe(STRONG_HAND_THRESHOLD)
@@ -157,6 +158,78 @@ describe("arrange", () => {
     expect(result.scores[1]).toBeGreaterThanOrEqual(result.scores[2])
   })
 
+  it("stays defensive for two pairs, a trail plus a pair, and a trail plus a pure sequence", () => {
+    const twoPairs = [
+      card("A", "hearts"),
+      card("A", "diamonds"),
+      card("K", "hearts"),
+      card("K", "diamonds"),
+      card("Q", "hearts"),
+      card("J", "clubs"),
+      card("10", "spades"),
+      card("9", "diamonds"),
+      card("7", "clubs"),
+    ]
+    const trailAndPair = [
+      card("A", "hearts"),
+      card("A", "diamonds"),
+      card("A", "clubs"),
+      card("K", "hearts"),
+      card("K", "diamonds"),
+      card("Q", "hearts"),
+      card("J", "clubs"),
+      card("9", "spades"),
+      card("7", "diamonds"),
+    ]
+    const trailAndPure = [
+      card("A", "spades"),
+      card("A", "diamonds"),
+      card("A", "clubs"),
+      card("K", "hearts"),
+      card("Q", "hearts"),
+      card("J", "hearts"),
+      card("9", "diamonds"),
+      card("7", "clubs"),
+      card("4", "spades"),
+    ]
+    for (const deal of [twoPairs, trailAndPair, trailAndPure]) {
+      const result = arrange(deal, OFF)
+      expect(result.kind).toBe("split")
+      if (result.kind !== "split") continue
+      expect(result.strategy).toBe("defensive")
+      expect(result.scores[0]).toBeGreaterThanOrEqual(result.scores[1])
+      expect(result.scores[1]).toBeGreaterThanOrEqual(result.scores[2])
+    }
+    const pure = arrange(trailAndPure, OFF)
+    expect(pure.kind).toBe("split")
+    if (pure.kind === "split") {
+      expect(pure.labels[0]).toBe("Trail")
+      expect(pure.labels[1]).toBe("Pure Sequence")
+    }
+  })
+
+  it("treats a 2-3-5 trump plus a pair as defensive", () => {
+    const deal = [
+      card("2", "hearts"),
+      card("3", "diamonds"),
+      card("5", "clubs"),
+      card("A", "hearts"),
+      card("A", "diamonds"),
+      card("K", "hearts"),
+      card("9", "spades"),
+      card("8", "clubs"),
+      card("6", "diamonds"),
+    ]
+    expect(evaluateHand(deal.slice(0, 3), TRUMP).category).toBe("trump-235")
+    expect(evaluateHand(deal.slice(3, 6), TRUMP).category).toBe("pair")
+    const result = arrange(deal, TRUMP)
+    expect(result.kind).toBe("split")
+    if (result.kind !== "split") return
+    expect(result.strategy).toBe("defensive")
+    const locks = result.labels.filter((label) => label === "Trail" || label === "2-3-5 Trump")
+    expect(locks.length).toBeLessThan(2)
+  })
+
   it("forces Kitti on a weak nine and keeps the strongest legal middle", () => {
     const deal = [
       card("2", "hearts"),
@@ -199,6 +272,12 @@ describe("arrange", () => {
       card("9", "spades"),
       card("7", "hearts"),
     ]
+    expect(DEFAULT_RULES.enable_four_of_a_kind_autowin).toBe(true)
+    expect(DEFAULT_RULES.enable_2_3_5_trump).toBe(false)
+    expect(arrange(deal, DEFAULT_RULES)).toEqual({
+      kind: "auto-win",
+      rank: "A",
+    })
     expect(arrange(deal, { ...OFF, enable_four_of_a_kind_autowin: true })).toEqual({
       kind: "auto-win",
       rank: "A",
@@ -232,9 +311,16 @@ describe("arrange", () => {
     const arranged = arrange(offsuit, TRUMP)
     expect(arranged.kind).toBe("split")
     if (arranged.kind !== "split") return
+    expect(arranged.strategy).toBe("aggressive")
     expect(arranged.labels[0]).toBe("2-3-5 Trump")
     expect(arranged.labels[1]).toBe("Trail")
     expect(ranksOf(arranged.hands[1].cards)).toEqual(["A", "A", "A"])
+
+    const withoutTrump = arrange(offsuit, OFF)
+    expect(withoutTrump.kind).toBe("split")
+    if (withoutTrump.kind !== "split") return
+    expect(withoutTrump.strategy).toBe("defensive")
+    expect(withoutTrump.labels).not.toContain("2-3-5 Trump")
 
     const suited = [
       card("2", "hearts"),
