@@ -99,13 +99,13 @@ export function KittiTable() {
     <div className="flex flex-col gap-6">
       <section
         aria-labelledby="rules-heading"
-        className="rounded-2xl border border-[rgb(228_193_90/0.35)] bg-[rgb(6_32_26/0.45)] p-4 sm:p-5"
+        className="sticker p-4 sm:p-5"
       >
         <div className="flex flex-col gap-1">
-          <h2 id="rules-heading" className="font-display text-2xl text-[#f6f1e4]">
+          <h2 id="rules-heading" className="font-display text-2xl text-[#241c18]">
             House rules
           </h2>
-          <p className="max-w-2xl text-sm leading-6 text-[#d9ccb0]">
+          <p className="max-w-2xl text-sm leading-6 font-semibold text-[#6b5344]">
             Switches stay put when you change them. A result already on the table is marked
             stale until you calculate again.
           </p>
@@ -144,10 +144,10 @@ export function KittiTable() {
       <section aria-labelledby="deck-heading" className="flex flex-col gap-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 id="deck-heading" className="font-display text-2xl text-[#f6f1e4]">
+            <h2 id="deck-heading" className="font-display text-2xl text-[#241c18]">
               The deck
             </h2>
-            <p className="mt-1 max-w-xl text-sm leading-6 text-[#d9ccb0]">
+            <p className="mt-1 max-w-xl text-sm leading-6 font-semibold text-[#6b5344]">
               Hearts and diamonds are red. Clubs and spades are black. Pick nine distinct cards.
               At nine, the rest of the deck locks until you deselect one.
             </p>
@@ -156,12 +156,19 @@ export function KittiTable() {
             <p
               data-testid="counter"
               aria-live="polite"
-              className="font-display text-3xl leading-none text-[#f6f1e4] tabular-nums"
+              className={`rounded-2xl border-[3px] border-[#241c18] px-3 py-1.5 font-display text-3xl leading-none tabular-nums shadow-[3px_3px_0_#241c18] ${
+                full ? "bg-[#ff6b6b] text-[#241c18]" : "bg-[#fffaf3] text-[#241c18]"
+              }`}
             >
-              <span className={full ? "text-[#e4c15a]" : undefined}>{selected.length}</span>
-              <span className="text-[#d9ccb0]"> / 9</span>
+              <span>{selected.length}</span>
+              <span> / 9</span>
             </p>
-            <Button type="button" variant="outline" onClick={clearSelection}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={clearSelection}
+              className="h-11 rounded-2xl border-[3px] border-[#241c18] bg-[#fffaf3] px-4 font-extrabold text-[#241c18] shadow-[3px_3px_0_#241c18] hover:bg-[#fff1dc]"
+            >
               Clear
             </Button>
           </div>
@@ -170,7 +177,7 @@ export function KittiTable() {
         <div className="flex flex-col gap-4">
           {SUITS.map((suit) => (
             <div key={suit}>
-              <h3 className="mb-2 text-xs font-semibold tracking-[0.16em] text-[#e4c15a] uppercase">
+              <h3 className="mb-2 text-xs font-extrabold tracking-[0.16em] text-[#241c18] uppercase">
                 {SUIT_LABEL[suit]}
               </h3>
               <div className="grid grid-cols-4 gap-1.5 min-[420px]:grid-cols-5 sm:grid-cols-7 md:grid-cols-9 lg:grid-cols-13">
@@ -195,13 +202,13 @@ export function KittiTable() {
           <Button
             type="button"
             size="lg"
-            className="h-11 px-5 text-base"
+            className="h-12 rounded-2xl border-[3px] border-[#241c18] bg-[#ff9f1c] px-5 text-base font-extrabold text-[#241c18] shadow-[4px_4px_0_#241c18] hover:bg-[#ffb03d]"
             disabled={!full}
             onClick={calculate}
           >
             Calculate Best Hands
           </Button>
-          <p className="text-sm text-[#d9ccb0]">
+          <p className="text-sm font-semibold text-[#6b5344]">
             {full
               ? "Nine cards in. Calculate when the house rules look right."
               : `${9 - selected.length} more ${selected.length === 8 ? "card" : "cards"} to open the arranger.`}
@@ -210,14 +217,14 @@ export function KittiTable() {
       </section>
 
       <section aria-labelledby="result-heading" aria-live="polite" className="flex flex-col gap-3">
-        <h2 id="result-heading" className="font-display text-2xl text-[#f6f1e4]">
+        <h2 id="result-heading" className="font-display text-2xl text-[#241c18]">
           The plays
         </h2>
         {error ? (
           <div
             role="alert"
             data-testid="error"
-            className="rounded-2xl border border-[#e07a6a] bg-[rgb(80_24_18/0.55)] px-4 py-4 text-[#ffd2cb]"
+            className="sticker sticker-coral px-4 py-4 font-semibold text-[#241c18]"
           >
             {error}
           </div>
@@ -227,7 +234,7 @@ export function KittiTable() {
             {stale ? (
               <p
                 data-testid="stale"
-                className="rounded-xl border border-[#e4c15a] bg-[rgb(228_193_90/0.14)] px-4 py-3 text-sm leading-6 text-[#f6e7b8]"
+                className="sticker sticker-mango px-4 py-3 text-sm leading-6 font-semibold text-[#241c18]"
               >
                 This result is out of date. The cards or house rules changed after the last
                 calculation. Calculate again to refresh it.
@@ -244,10 +251,10 @@ export function KittiTable() {
         ) : error ? null : (
           <div
             data-testid="empty"
-            className="rounded-2xl border border-dashed border-[rgb(228_193_90/0.4)] bg-[rgb(6_32_26/0.35)] px-4 py-8 sm:px-8"
+            className="sticker px-4 py-8 sm:px-8"
           >
-            <p className="font-display text-xl text-[#f6f1e4]">No split yet.</p>
-            <p className="mt-2 max-w-xl text-sm leading-6 text-[#d9ccb0]">
+            <p className="font-display text-xl text-[#241c18]">No split yet.</p>
+            <p className="mt-2 max-w-xl text-sm leading-6 font-semibold text-[#6b5344]">
               Choose nine cards, set the house rules, and calculate. Both plays land here, each
               with Hand 1 at least as strong as Hand 2, and Hand 2 at least as strong as Hand 3.
             </p>
@@ -255,7 +262,7 @@ export function KittiTable() {
               {["Hand 1", "Hand 2", "Hand 3"].map((label) => (
                 <div
                   key={label}
-                  className="flex aspect-[5/7] items-end rounded-[0.45rem] border border-dashed border-[rgb(228_193_90/0.35)] bg-[rgb(247_241_227/0.04)] p-2 text-[10px] tracking-wide text-[#d9ccb0] uppercase"
+                  className="flex aspect-[5/7] -rotate-2 items-end rounded-xl border-[3px] border-dashed border-[#241c18] bg-[#fff3d6] p-2 text-[10px] font-extrabold tracking-wide text-[#6b5344] uppercase even:rotate-2"
                 >
                   {label}
                 </div>
@@ -283,12 +290,12 @@ function RuleSwitch({
 }) {
   const helpId = `${id}-help`
   return (
-    <div className="flex items-start justify-between gap-4 rounded-xl bg-[rgb(255_255_255/0.03)] px-3 py-3">
+    <div className="flex items-start justify-between gap-4 rounded-2xl border-[3px] border-[#241c18] bg-[#fff1dc] px-3 py-3">
       <div className="min-w-0">
-        <label htmlFor={id} className="font-medium text-[#f6f1e4]">
+        <label htmlFor={id} className="font-extrabold text-[#241c18]">
           {label}
         </label>
-        <p id={helpId} className="mt-1 text-sm leading-6 text-[#d9ccb0]">
+        <p id={helpId} className="mt-1 text-sm leading-6 font-semibold text-[#6b5344]">
           {description}
         </p>
       </div>
@@ -313,19 +320,33 @@ function BothPlays({
       <PlayView
         play={result.aggressive}
         title="Aggressive — best hands to win two in a row"
+        tone="mango"
       />
-      <PlayView play={result.defensive} title="Defensive — built to win the middle" />
+      <PlayView
+        play={result.defensive}
+        title="Defensive — built to win the middle"
+        tone="sky"
+      />
     </div>
   )
 }
 
-function PlayView({ play, title }: { play: Play; title: string }) {
+function PlayView({
+  play,
+  title,
+  tone,
+}: {
+  play: Play
+  title: string
+  tone: "mango" | "sky"
+}) {
+  const wash = tone === "mango" ? "sticker-mango" : "sticker-sky"
   return (
-    <div className="rounded-2xl border border-[rgb(228_193_90/0.35)] bg-[rgb(6_32_26/0.5)] p-4 sm:p-5">
+    <div className={`sticker p-4 sm:p-5 ${wash}`}>
       <h3
         data-testid="strategy"
         data-strategy={play.name}
-        className="font-display text-2xl text-[#e4c15a] sm:text-3xl"
+        className="font-display text-2xl text-[#241c18] sm:text-3xl"
       >
         {title}
       </h3>
@@ -334,11 +355,11 @@ function PlayView({ play, title }: { play: Play; title: string }) {
           <article
             key={hand.label + index}
             data-testid={`hand-${play.name}-${index + 1}`}
-            className="min-w-0 rounded-xl bg-[rgb(255_255_255/0.04)] p-3"
+            className="min-w-0 rounded-2xl border-[3px] border-[#241c18] bg-[#fffaf3] p-3"
           >
             <div className="mb-3 flex items-baseline justify-between gap-2">
-              <h4 className="font-display text-xl text-[#f6f1e4]">Hand {index + 1}</h4>
-              <p data-testid="category" className="text-sm font-semibold text-[#e4c15a]">
+              <h4 className="font-display text-xl text-[#241c18]">Hand {index + 1}</h4>
+              <p data-testid="category" className="text-sm font-extrabold text-[#d3122a]">
                 {hand.label}
               </p>
             </div>
@@ -361,13 +382,13 @@ function Reshuffle() {
   return (
     <div
       data-testid="reshuffle"
-      className="rounded-2xl border border-[#e4c15a] bg-[rgb(228_193_90/0.12)] p-4 sm:p-6"
+      className="sticker sticker-sky p-4 sm:p-6"
     >
-      <p className="text-xs font-semibold tracking-[0.18em] text-[#e4c15a] uppercase">
+      <p className="inline-block rounded-full border-[3px] border-[#241c18] bg-[#7ec8e3] px-3 py-1 text-xs font-extrabold tracking-[0.18em] text-[#241c18] uppercase">
         Reshuffle
       </p>
-      <p className="font-display mt-1 text-3xl text-[#f6f1e4]">Four pairs</p>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#f6f1e4]">
+      <p className="font-display mt-3 text-3xl text-[#241c18]">Four pairs</p>
+      <p className="mt-2 max-w-2xl text-sm leading-6 font-semibold text-[#241c18]">
         These nine cards are four pairs and one single card. Reshuffle the deal. The two plays
         stay off the table.
       </p>
@@ -386,13 +407,13 @@ function AutoWin({
   return (
     <div
       data-testid="auto-win"
-      className="rounded-2xl border border-[#e4c15a] bg-[rgb(228_193_90/0.12)] p-4 sm:p-6"
+      className="sticker sticker-coral p-4 sm:p-6"
     >
-      <p className="text-xs font-semibold tracking-[0.18em] text-[#e4c15a] uppercase">
+      <p className="inline-block rounded-full border-[3px] border-[#241c18] bg-[#ff6b6b] px-3 py-1 text-xs font-extrabold tracking-[0.18em] text-[#241c18] uppercase">
         Auto-win
       </p>
-      <p className="font-display mt-1 text-3xl text-[#f6f1e4] capitalize">{RANK_WORD[result.rank]}</p>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#f6f1e4]">
+      <p className="font-display mt-3 text-3xl text-[#241c18] capitalize">{RANK_WORD[result.rank]}</p>
+      <p className="mt-2 max-w-2xl text-sm leading-6 font-semibold text-[#241c18]">
         Four {RANK_WORD[result.rank]} are in the nine cards. This house rule ends the round
         before anyone arranges a split.
       </p>

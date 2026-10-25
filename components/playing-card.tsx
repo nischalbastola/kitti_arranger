@@ -28,7 +28,7 @@ export function cardLabel(card: Card): string {
 }
 
 function ink(suit: Suit): string {
-  return suit === "hearts" || suit === "diamonds" ? "text-[#c53434]" : "text-[#1a1614]"
+  return suit === "hearts" || suit === "diamonds" ? "text-[#d3122a]" : "text-[#1a1614]"
 }
 
 export function PlayingCard({
@@ -49,7 +49,7 @@ export function PlayingCard({
   const show = size === "show"
   const face = (
     <span
-      className={`relative flex aspect-[5/7] w-full flex-col items-center justify-center rounded-[0.45rem] bg-[#f7f1e3] shadow-[0_6px_14px_rgb(0_0_0/0.28),inset_0_0_0_1px_rgb(88_62_24/0.2)] ${color} ${
+      className={`relative flex aspect-[5/7] w-full flex-col items-center justify-center rounded-xl border-[3px] border-[#241c18] bg-[#fffaf3] shadow-[3px_3px_0_#241c18] ${color} ${
         show ? "text-sm sm:text-base" : "text-[11px] sm:text-xs"
       }`}
     >
@@ -87,8 +87,10 @@ export function PlayingCard({
       aria-label={`${selected ? "Deselect" : "Select"} ${cardLabel(card)}`}
       disabled={disabled}
       onClick={() => onToggle(card)}
-      className={`min-w-0 rounded-[0.55rem] p-0.5 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e4c15a] ${
-        selected ? "-translate-y-0.5 ring-2 ring-[#e4c15a]" : "hover:-translate-y-0.5"
+      className={`min-w-0 rounded-2xl transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#241c18] ${
+        selected
+          ? "-translate-y-1 bg-[#ff9f1c] p-1 shadow-[4px_4px_0_#241c18]"
+          : "p-0.5 hover:-translate-y-0.5"
       } ${disabled ? "cursor-not-allowed opacity-40 saturate-50" : "cursor-pointer"}`}
     >
       {face}

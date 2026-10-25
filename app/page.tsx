@@ -90,15 +90,15 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <header className="max-w-3xl">
-        <p className="text-xs font-semibold tracking-[0.22em] text-[#e4c15a] uppercase">
+        <p className="inline-block -rotate-2 rounded-full border-[3px] border-[#241c18] bg-[#ff9f1c] px-3 py-1 text-xs font-extrabold tracking-[0.18em] text-[#241c18] uppercase shadow-[3px_3px_0_#241c18]">
           Nepali 9 Patti
         </p>
-        <h1 className="font-display mt-2 text-5xl text-[#f6f1e4] sm:text-6xl">Kitti</h1>
-        <p className="mt-4 text-lg leading-8 text-[#f6f1e4]">
+        <h1 className="font-display mt-4 text-5xl text-[#241c18] sm:text-6xl">Kitti</h1>
+        <p className="mt-4 text-lg leading-8 font-semibold text-[#241c18]">
           Nine cards from a 52-card deck. Three hands of three. A split is legal only when Hand 1
           is at least as strong as Hand 2, and Hand 2 is at least as strong as Hand 3.
         </p>
-        <p className="mt-3 text-sm leading-6 text-[#d9ccb0]">
+        <p className="mt-3 text-sm leading-6 font-semibold text-[#6b5344]">
           Every normal nine shows two plays. Aggressive — best hands to win two in a row.
           Defensive — built to win the middle.
         </p>
@@ -107,10 +107,10 @@ export default function HomePage() {
       <KittiTable />
 
       <section aria-labelledby="ladder-heading" className="pb-6">
-        <h2 id="ladder-heading" className="font-display text-2xl text-[#f6f1e4]">
+        <h2 id="ladder-heading" className="font-display text-2xl text-[#241c18]">
           How Teen Patti ranks a hand
         </h2>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-[#d9ccb0]">
+        <p className="mt-2 max-w-2xl text-sm leading-6 font-semibold text-[#6b5344]">
           Classic order, high to low. The numeric score keeps the category above every kicker, so
           a pair always beats a high card and a trail always beats a pure sequence.
         </p>
@@ -118,13 +118,13 @@ export default function HomePage() {
           {ladder.map((step, index) => (
             <li
               key={step.name}
-              className="rounded-xl border border-[rgb(228_193_90/0.25)] bg-[rgb(6_32_26/0.4)] p-4"
+              className="sticker p-4"
             >
-              <p className="text-xs font-semibold tracking-[0.14em] text-[#e4c15a] uppercase">
+              <p className="inline-flex size-7 items-center justify-center rounded-full border-2 border-[#241c18] bg-[#7ec8e3] text-xs font-extrabold text-[#241c18]">
                 {index + 1}
               </p>
-              <h3 className="font-display mt-1 text-xl text-[#f6f1e4]">{step.name}</h3>
-              <p className="mt-1 text-sm leading-6 text-[#d9ccb0]">{step.detail}</p>
+              <h3 className="font-display mt-2 text-xl text-[#241c18]">{step.name}</h3>
+              <p className="mt-1 text-sm leading-6 font-semibold text-[#6b5344]">{step.detail}</p>
             </li>
           ))}
         </ol>

@@ -7,9 +7,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-fraunces);
+  --font-heading: var(--font-fredoka), "Trebuchet MS", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,30 +49,30 @@
 }
 
 :root {
-  --background: #0c3b2e;
-  --foreground: #f6f1e4;
-  --card: #f7f1e3;
-  --card-foreground: #1c140c;
-  --popover: #123f32;
-  --popover-foreground: #f6f1e4;
-  --primary: #e4c15a;
-  --primary-foreground: #1b1406;
-  --secondary: #145244;
-  --secondary-foreground: #f6f1e4;
-  --muted: #124838;
-  --muted-foreground: #d9ccb0;
-  --accent: #e4c15a;
-  --accent-foreground: #1b1406;
-  --destructive: #e07a6a;
-  --border: rgb(228 193 90 / 35%);
-  --input: #f3ead6;
-  --ring: #e4c15a;
+  --background: #ffe7c2;
+  --foreground: #241c18;
+  --card: #fffaf3;
+  --card-foreground: #241c18;
+  --popover: #fffaf3;
+  --popover-foreground: #241c18;
+  --primary: #ff9f1c;
+  --primary-foreground: #241c18;
+  --secondary: #7ec8e3;
+  --secondary-foreground: #241c18;
+  --muted: #fff1dc;
+  --muted-foreground: #6b5344;
+  --accent: #ff6b6b;
+  --accent-foreground: #241c18;
+  --destructive: #e85d4c;
+  --border: #241c18;
+  --input: #fffaf3;
+  --ring: #ff9f1c;
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 1.05rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -130,13 +130,39 @@
 }
 
 body {
-  background-color: #0b3a2c;
+  color: #241c18;
+  background-color: #fff1d0;
   background-image:
-    radial-gradient(1100px 520px at 50% -8%, rgb(255 244 214 / 0.09), transparent 58%),
-    radial-gradient(800px 480px at 100% 100%, rgb(0 0 0 / 0.28), transparent 46%);
+    radial-gradient(circle at 14px 14px, rgb(36 28 24 / 0.35) 1.7px, transparent 2.1px),
+    radial-gradient(ellipse 340px 220px at 0% 0%, #ffb4a2 0%, transparent 72%),
+    radial-gradient(ellipse 380px 260px at 100% 0%, #7ec8e3 0%, transparent 70%),
+    radial-gradient(ellipse 420px 280px at 100% 100%, #ffc857 0%, transparent 72%),
+    radial-gradient(ellipse 300px 220px at 0% 100%, #ff8c69 0%, transparent 70%);
+  background-size: 28px 28px, auto, auto, auto, auto;
+  background-attachment: scroll;
   min-height: 100%;
 }
 
 .font-display {
-  font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  font-family: var(--font-fredoka), "Trebuchet MS", sans-serif;
+  font-weight: 700;
+}
+
+.sticker {
+  border: 3px solid #241c18;
+  border-radius: 1.75rem;
+  background: #fffaf3;
+  box-shadow: 6px 6px 0 #241c18;
+}
+
+.sticker-mango {
+  background: #ffd56a;
+}
+
+.sticker-sky {
+  background: #b9e6f7;
+}
+
+.sticker-coral {
+  background: #ffb4a2;
 }
