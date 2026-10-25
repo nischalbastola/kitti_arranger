@@ -51,7 +51,7 @@ const ladder = [
   {
     name: "2-3-5 Trump",
     detail:
-      "Only with the house rule on, and only when 2, 3, and 5 are not all one suit. It sits above every trail. A suited 2-3-5 stays a color.",
+      "Only with the house rule on. The 2, 3, and 5 must be three different suits. That hand sits above every trail. Two cards sharing a suit are not a trump. All three of one suit stay a color.",
   },
   {
     name: "Trail",

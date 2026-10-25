@@ -132,7 +132,7 @@ export function KittiTable() {
           <RuleSwitch
             id="rule-trump"
             label="2-3-5 trump"
-            description="An offsuit 2-3-5 ranks above every trail. A suited 2-3-5 stays a normal color. It is not a sequence."
+            description="The 2, 3, and 5 must be three different suits. That hand ranks above every trail. Two cards sharing a suit are not a trump, and all three of one suit stay a normal color. It is not a sequence."
             checked={rules.enable_2_3_5_trump}
             onCheckedChange={(checked) =>
               setRules((current) => ({ ...current, enable_2_3_5_trump: checked }))

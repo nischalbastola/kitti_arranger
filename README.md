@@ -13,7 +13,7 @@ House rules:
 
 - Four of a kind auto-win is on by default. Four of the same rank in the nine cards wins the deal before any split. The switch can turn it off.
 - Four pairs reshuffle is off by default. Turn it on and four pairs plus one single card means reshuffle. Four of a kind is not four pairs. If both rules match, the instant win takes the deal when that switch is on.
-- Offsuit 2-3-5 as an absolute trump above Trail. A suited 2-3-5 stays a Color. This switch defaults off. Both plays use the scores it changes.
+- 2-3-5 is an absolute trump above Trail only when the 2, 3, and 5 are three different suits. Two cards sharing a suit are not a trump. All three of one suit stay a Color. This switch defaults off. Both plays use the scores it changes.
 
 ## Run locally
 

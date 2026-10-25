@@ -5,7 +5,7 @@
  * A split is legal only when score(H1) >= score(H2) >= score(H3).
  *
  * Classic Teen Patti order, high to low:
- *   2-3-5 Trump (house rule, offsuit only) > Trail > Pure Sequence >
+ *   2-3-5 Trump (house rule; 2, 3, and 5 in three different suits) > Trail > Pure Sequence >
  *   Sequence > Color > Pair > High Card.
  *
  * Within a category:
@@ -218,6 +218,11 @@ function isTwoThreeFive(cards: readonly Card[]): boolean {
   return ranks.size === 3 && ranks.has("2") && ranks.has("3") && ranks.has("5")
 }
 
+/** True only when every card has its own suit. Two cards sharing a suit is false. */
+function threeDifferentSuits(cards: readonly Card[]): boolean {
+  return new Set(cards.map((card) => card.suit)).size === 3
+}
+
 /**
  * Sequence ladder: A-K-Q = 11, A-2-3 = 10, K-Q-J = 9, …, 4-3-2 = 0.
  * Returns null when the three ranks are not a straight. 2-3-5 is null.
@@ -309,7 +314,7 @@ export function evaluateHand(cards: readonly Card[], rules: HouseRules): HandEva
   let category: Category
   let within = 0
 
-  if (rules.enable_2_3_5_trump && isTwoThreeFive(cards) && !isFlush(cards)) {
+  if (rules.enable_2_3_5_trump && isTwoThreeFive(cards) && threeDifferentSuits(cards)) {
     category = "trump-235"
     within = 0
   } else {

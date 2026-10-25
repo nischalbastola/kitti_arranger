@@ -262,15 +262,44 @@ describe("arrange", () => {
     expectLegalPlay(arranged.defensive)
   })
 
-  it("changes hand scores when offsuit 2-3-5 is a trump", () => {
-    const offsuit = [
+  it("does not treat a 2-3-5 as a trump when two suits match", () => {
+    const sharedSuits = [
+      [card("2", "hearts"), card("3", "hearts"), card("5", "clubs")],
+      [card("2", "hearts"), card("3", "diamonds"), card("5", "hearts")],
+      [card("2", "clubs"), card("3", "spades"), card("5", "spades")],
+    ]
+    const deuces = [card("2", "spades"), card("2", "diamonds"), card("2", "clubs")]
+    for (const handCards of sharedSuits) {
+      const evaluated = evaluateHand(handCards, TRUMP)
+      expect(evaluated.category).toBe("high-card")
+      expect(evaluated.label).not.toBe("2-3-5 Trump")
+      expect(evaluated.score).toBeLessThan(evaluateHand(deuces, TRUMP).score)
+      expect(evaluateHand(handCards, OFF).category).toBe("high-card")
+    }
+  })
+
+  it("ranks a 2-3-5 of three different suits above a trail", () => {
+    const trumpHand = [
+      card("2", "hearts"),
+      card("3", "diamonds"),
+      card("5", "clubs"),
+    ]
+    const trail = [card("A", "hearts"), card("A", "diamonds"), card("A", "clubs")]
+    const asTrump = evaluateHand(trumpHand, TRUMP)
+    expect(asTrump.category).toBe("trump-235")
+    expect(asTrump.score).toBeGreaterThan(evaluateHand(trail, TRUMP).score)
+    expect(evaluateHand(trumpHand, OFF).category).not.toBe("trump-235")
+  })
+
+  it("changes hand scores when a three-suit 2-3-5 is a trump", () => {
+    const threeSuits = [
       card("2", "hearts"),
       card("3", "diamonds"),
       card("5", "clubs"),
     ]
     const aces = [card("A", "hearts"), card("A", "diamonds"), card("A", "clubs")]
-    const asTrump = evaluateHand(offsuit, TRUMP)
-    const asHighCard = evaluateHand(offsuit, OFF)
+    const asTrump = evaluateHand(threeSuits, TRUMP)
+    const asHighCard = evaluateHand(threeSuits, OFF)
     const trail = evaluateHand(aces, TRUMP)
     expect(asTrump.category).toBe("trump-235")
     expect(asTrump.score).toBeGreaterThan(trail.score)
@@ -278,7 +307,7 @@ describe("arrange", () => {
     expect(asTrump.score).toBeGreaterThan(asHighCard.score)
 
     const deal = [
-      ...offsuit,
+      ...threeSuits,
       ...aces,
       card("9", "spades"),
       card("8", "diamonds"),
