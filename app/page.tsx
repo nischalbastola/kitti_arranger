@@ -4,7 +4,7 @@ import { KittiTable } from "@/components/kitti-table"
 export const metadata: Metadata = {
   title: "Kitti — Nepali 9 Patti hand arranger",
   description:
-    "Arrange nine cards into three Teen Patti hands. Kitti scores trails, pure sequences, sequences, colors, pairs, and high cards, then picks an aggressive split or a defensive Force Kitti.",
+    "Arrange nine cards into three Teen Patti hands. Kitti shows an aggressive play to win two in a row and a defensive play built to win the middle.",
   keywords: [
     "Kitti",
     "9 Patti",
@@ -99,8 +99,8 @@ export default function HomePage() {
           is at least as strong as Hand 2, and Hand 2 is at least as strong as Hand 3.
         </p>
         <p className="mt-3 text-sm leading-6 text-[#d9ccb0]">
-          Defense is the normal plan. It goes for the win only when Hand 1 and Hand 2 are both
-          trails, or a 2-3-5 trump. Otherwise it forces Kitti and protects the middle hand.
+          Every normal nine shows two plays. Aggressive — best hands to win two in a row.
+          Defensive — built to win the middle.
         </p>
       </header>
 

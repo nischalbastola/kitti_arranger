@@ -17,10 +17,8 @@
  *   Pair: higher pair rank, then the kicker.
  *
  * The absolute score packs the category above every kicker, so a pair always
- * beats any high card. Defense is the normal plan. Aggressive play happens
- * only when a legal split has two lock hands in a row: Hand 1 and Hand 2 are
- * each a trail, or a 2-3-5 trump when that house rule is on. Pure sequence,
- * sequence, color, pair, and high card are not locks.
+ * beats any high card. A normal nine returns two legal plays: aggressive
+ * maximizes Hand 1 + Hand 2, and defensive maximizes Hand 2.
  */
 
 export const RANKS = [
@@ -52,11 +50,13 @@ export type Card = {
 export type HouseRules = {
   enable_four_of_a_kind_autowin: boolean
   enable_2_3_5_trump: boolean
+  enable_four_pair_reshuffle: boolean
 }
 
 export const DEFAULT_RULES: HouseRules = {
   enable_four_of_a_kind_autowin: true,
   enable_2_3_5_trump: false,
+  enable_four_pair_reshuffle: false,
 }
 
 export type Category =
@@ -135,15 +135,24 @@ export type AutoWinResult = {
   rank: Rank
 }
 
-export type SplitResult = {
-  kind: "split"
-  strategy: "aggressive" | "defensive"
+export type ReshuffleResult = {
+  kind: "reshuffle"
+}
+
+export type Play = {
+  name: "aggressive" | "defensive"
   hands: [HandEvaluation, HandEvaluation, HandEvaluation]
   scores: [number, number, number]
   labels: [string, string, string]
 }
 
-export type ArrangeResult = AutoWinResult | SplitResult
+export type SplitResult = {
+  kind: "split"
+  aggressive: Play
+  defensive: Play
+}
+
+export type ArrangeResult = AutoWinResult | ReshuffleResult | SplitResult
 
 export function cardKey(card: Card): string {
   return `${card.rank}-${card.suit}`
@@ -197,12 +206,8 @@ function pack(category: Category, within: number): number {
   return CATEGORY_RANK[category] * KICKER_SPACE + within
 }
 
-/** Score of the worst pair, 2-2-3. A pair is not a lock hand. */
+/** Score of the worst pair, 2-2-3. */
 export const STRONG_HAND_THRESHOLD = pack("pair", RANK_VALUE["2"] * RANK_BASE + RANK_VALUE["3"])
-
-function isLockHand(hand: HandEvaluation): boolean {
-  return hand.category === "trail" || hand.category === "trump-235"
-}
 
 function isFlush(cards: readonly Card[]): boolean {
   return cards.every((card) => card.suit === cards[0].suit)
@@ -440,13 +445,22 @@ export function fourOfAKindRank(cards: readonly Card[]): Rank | null {
   return best
 }
 
-function toSplit(
-  strategy: "aggressive" | "defensive",
+/** Exactly four pair-ranks and one singleton. Four of a kind is not this shape. */
+export function isFourPairReshuffle(cards: readonly Card[]): boolean {
+  const counts = new Map<Rank, number>()
+  for (const card of cards) {
+    counts.set(card.rank, (counts.get(card.rank) ?? 0) + 1)
+  }
+  const values = [...counts.values()].sort((a, b) => a - b)
+  return values.length === 5 && values[0] === 1 && values.slice(1).every((count) => count === 2)
+}
+
+function toPlay(
+  name: "aggressive" | "defensive",
   hands: [HandEvaluation, HandEvaluation, HandEvaluation],
-): SplitResult {
+): Play {
   return {
-    kind: "split",
-    strategy,
+    name,
     hands,
     scores: [hands[0].score, hands[1].score, hands[2].score],
     labels: [hands[0].label, hands[1].label, hands[2].label],
@@ -461,6 +475,10 @@ export function arrange(cards: readonly Card[], rules: HouseRules): ArrangeResul
     if (rank) return { kind: "auto-win", rank }
   }
 
+  if (rules.enable_four_pair_reshuffle && isFourPairReshuffle(cards)) {
+    return { kind: "reshuffle" }
+  }
+
   const legal = legalSplits(cards, rules)
   if (legal.length === 0) {
     throw new KittiError(
@@ -469,19 +487,16 @@ export function arrange(cards: readonly Card[], rules: HouseRules): ArrangeResul
     )
   }
 
-  const aggressive = legal.filter(([h1, h2]) => isLockHand(h1) && isLockHand(h2))
-
-  if (aggressive.length > 0) {
-    let best = aggressive[0]
-    for (const candidate of aggressive.slice(1)) {
-      if (preferAggressive(candidate, best)) best = candidate
-    }
-    return toSplit("aggressive", best)
-  }
-
-  let best = legal[0]
+  let aggressiveBest = legal[0]
+  let defensiveBest = legal[0]
   for (const candidate of legal.slice(1)) {
-    if (preferDefensive(candidate, best)) best = candidate
+    if (preferAggressive(candidate, aggressiveBest)) aggressiveBest = candidate
+    if (preferDefensive(candidate, defensiveBest)) defensiveBest = candidate
   }
-  return toSplit("defensive", best)
+
+  return {
+    kind: "split",
+    aggressive: toPlay("aggressive", aggressiveBest),
+    defensive: toPlay("defensive", defensiveBest),
+  }
 }

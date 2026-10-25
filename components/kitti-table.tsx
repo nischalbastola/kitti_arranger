@@ -8,6 +8,7 @@ import {
   type ArrangeResult,
   type Card,
   type HouseRules,
+  type Play,
   type Rank,
   type Suit,
   DEFAULT_RULES,
@@ -44,7 +45,7 @@ const RANK_WORD: Record<Rank, string> = {
 const DECK: Card[] = SUITS.flatMap((suit) => RANKS.map((rank) => ({ rank, suit })))
 
 function rulesKey(rules: HouseRules): string {
-  return `${rules.enable_four_of_a_kind_autowin ? 1 : 0}${rules.enable_2_3_5_trump ? 1 : 0}`
+  return `${rules.enable_four_of_a_kind_autowin ? 1 : 0}${rules.enable_2_3_5_trump ? 1 : 0}${rules.enable_four_pair_reshuffle ? 1 : 0}`
 }
 
 export function KittiTable() {
@@ -109,7 +110,7 @@ export function KittiTable() {
             stale until you calculate again.
           </p>
         </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div className="mt-4 grid gap-4 lg:grid-cols-3">
           <RuleSwitch
             id="rule-quads"
             label="Four of a kind"
@@ -117,6 +118,15 @@ export function KittiTable() {
             checked={rules.enable_four_of_a_kind_autowin}
             onCheckedChange={(checked) =>
               setRules((current) => ({ ...current, enable_four_of_a_kind_autowin: checked }))
+            }
+          />
+          <RuleSwitch
+            id="rule-reshuffle"
+            label="Four pairs reshuffle"
+            description="Four pairs and one single card means reshuffle the deal instead of arranging it."
+            checked={rules.enable_four_pair_reshuffle}
+            onCheckedChange={(checked) =>
+              setRules((current) => ({ ...current, enable_four_pair_reshuffle: checked }))
             }
           />
           <RuleSwitch
@@ -201,7 +211,7 @@ export function KittiTable() {
 
       <section aria-labelledby="result-heading" aria-live="polite" className="flex flex-col gap-3">
         <h2 id="result-heading" className="font-display text-2xl text-[#f6f1e4]">
-          The split
+          The plays
         </h2>
         {error ? (
           <div
@@ -225,8 +235,10 @@ export function KittiTable() {
             ) : null}
             {result.kind === "auto-win" ? (
               <AutoWin result={result} selected={selected} />
+            ) : result.kind === "reshuffle" ? (
+              <Reshuffle />
             ) : (
-              <SplitView result={result} />
+              <BothPlays result={result} />
             )}
           </div>
         ) : error ? null : (
@@ -236,9 +248,8 @@ export function KittiTable() {
           >
             <p className="font-display text-xl text-[#f6f1e4]">No split yet.</p>
             <p className="mt-2 max-w-xl text-sm leading-6 text-[#d9ccb0]">
-              Choose nine cards, set the house rules, and calculate. Hand 1, Hand 2, and Hand 3
-              land here only when Hand 1 is at least as strong as Hand 2, and Hand 2 is at least
-              as strong as Hand 3.
+              Choose nine cards, set the house rules, and calculate. Both plays land here, each
+              with Hand 1 at least as strong as Hand 2, and Hand 2 at least as strong as Hand 3.
             </p>
             <div className="mt-5 grid max-w-md grid-cols-3 gap-2" aria-hidden="true">
               {["Hand 1", "Hand 2", "Hand 3"].map((label) => (
@@ -292,35 +303,41 @@ function RuleSwitch({
   )
 }
 
-function SplitView({
+function BothPlays({
   result,
 }: {
   result: Extract<ArrangeResult, { kind: "split" }>
 }) {
-  const aggressive = result.strategy === "aggressive"
+  return (
+    <div className="flex flex-col gap-4">
+      <PlayView
+        play={result.aggressive}
+        title="Aggressive — best hands to win two in a row"
+      />
+      <PlayView play={result.defensive} title="Defensive — built to win the middle" />
+    </div>
+  )
+}
+
+function PlayView({ play, title }: { play: Play; title: string }) {
   return (
     <div className="rounded-2xl border border-[rgb(228_193_90/0.35)] bg-[rgb(6_32_26/0.5)] p-4 sm:p-5">
-      <p
+      <h3
         data-testid="strategy"
-        data-strategy={result.strategy}
-        className="font-display text-3xl text-[#e4c15a]"
+        data-strategy={play.name}
+        className="font-display text-2xl text-[#e4c15a] sm:text-3xl"
       >
-        {aggressive ? "Aggressive" : "Defensive — Force Kitti"}
-      </p>
-      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#f6f1e4]">
-        {aggressive
-          ? "Hand 1 and Hand 2 are both locks, a trail or a 2-3-5 trump, so this split takes the two wins in a row."
-          : "Defense is the normal plan. No legal split locks both Hand 1 and Hand 2, so this line protects the middle kitti hand."}
-      </p>
+        {title}
+      </h3>
       <div className="mt-5 grid gap-4 md:grid-cols-3">
-        {result.hands.map((hand, index) => (
+        {play.hands.map((hand, index) => (
           <article
             key={hand.label + index}
-            data-testid={`hand-${index + 1}`}
+            data-testid={`hand-${play.name}-${index + 1}`}
             className="min-w-0 rounded-xl bg-[rgb(255_255_255/0.04)] p-3"
           >
             <div className="mb-3 flex items-baseline justify-between gap-2">
-              <h3 className="font-display text-xl text-[#f6f1e4]">Hand {index + 1}</h3>
+              <h4 className="font-display text-xl text-[#f6f1e4]">Hand {index + 1}</h4>
               <p data-testid="category" className="text-sm font-semibold text-[#e4c15a]">
                 {hand.label}
               </p>
@@ -336,6 +353,24 @@ function SplitView({
           </article>
         ))}
       </div>
+    </div>
+  )
+}
+
+function Reshuffle() {
+  return (
+    <div
+      data-testid="reshuffle"
+      className="rounded-2xl border border-[#e4c15a] bg-[rgb(228_193_90/0.12)] p-4 sm:p-6"
+    >
+      <p className="text-xs font-semibold tracking-[0.18em] text-[#e4c15a] uppercase">
+        Reshuffle
+      </p>
+      <p className="font-display mt-1 text-3xl text-[#f6f1e4]">Four pairs</p>
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#f6f1e4]">
+        These nine cards are four pairs and one single card. Reshuffle the deal. The two plays
+        stay off the table.
+      </p>
     </div>
   )
 }
